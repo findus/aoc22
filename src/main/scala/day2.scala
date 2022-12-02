@@ -34,9 +34,18 @@ object day2 extends App {
     println(rounds)
   }
 
-  io.load("day2b") { lines =>
-   //todo rewrite when i get it
+  io.load("day2") { lines =>
 
+    val rounds = lines.foldLeft(0)((prev, line) => {
+      val (a,b) = (line.split(" ").head, line.split(" ").last)
+      b match {
+        case "X" => prev + (Math.floorMod((getNumber(a)-1) - 1, 3) + 1)
+        case "Y" => prev + 3 + (getNumber(a) -1) + 1
+        case "Z" => prev + (Math.floorMod((getNumber(a)-1) + 1, 3) + 1) + 6
+      }
+    })
+
+    println(rounds)
   }
 
 }
