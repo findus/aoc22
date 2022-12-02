@@ -7,8 +7,8 @@ object day2 extends App {
 
   def getNumber(input: String) = {
     input match {
-      case "A" | "X" => 1    //Rock //Lose
-      case "B" | "Y" => 2    //Paper //Draw
+      case "A" | "X" => 1   //Rock     //Lose
+      case "B" | "Y" => 2   //Paper    //Draw
       case "C" | "Z" => 3   //Scissors //Win
     }
   }
@@ -16,13 +16,7 @@ object day2 extends App {
 
   def winner(p1: Int, p2: Int): Int = {
     val result = Math.floorMod(p1 - p2, 3)
-    if (result == 2) {
-      6
-    } else if (result == 0) {
-      3
-    } else {
-      0
-    }
+    if (result == 2) { 6 } else if (result == 0) { 3 } else { 0 }
   }
 
   io.load("day2") { lines =>
