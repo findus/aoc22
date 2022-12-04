@@ -13,7 +13,6 @@ object day2 extends App {
     }
   }
 
-
   def winner(p1: Int, p2: Int): Int = {
     val result = Math.floorMod(p1 - p2, 3)
     if (result == 2) { 6 } else if (result == 0) { 3 } else { 0 }
@@ -33,9 +32,9 @@ object day2 extends App {
     val rounds = lines.foldLeft(0)((prev, line) => {
       val (a,b) = (line.split(" ").head, line.split(" ").last)
       b match {
-        case "X" => prev + (Math.floorMod((getNumber(a)-1) - 1, 3) + 1)
-        case "Y" => prev + 3 + (getNumber(a) -1) + 1
-        case "Z" => prev + (Math.floorMod((getNumber(a)-1) + 1, 3) + 1) + 6
+        case "X" => prev + (Math.floorMod((getNumber(a) - 1) - 1, 3) + 1)
+        case "Y" => prev + 3 + (getNumber(a) - 1) + 1
+        case "Z" => prev + (Math.floorMod((getNumber(a) - 1) + 1, 3) + 1) + 6
       }
     })
 
