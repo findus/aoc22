@@ -52,30 +52,13 @@ object day9 extends App {
   case class Action(position: ActionType)
   case class State(name: String, coord: Coord, visited: List[Coord])
 
-  def printState(states: List[State]) = {
-    (0 to 50).reverse.foreach { y =>
-      (0 to 50).foreach { x =>
-        val entry = states.find { entry => entry.coord.equals((x, y)) }
-        if (entry.isDefined) { print(entry.get.name) }  else { print(".")}
-      }
-      println("")
-    }
-    println("")
-  }
-
   private def simulate(actions: List[Action], start: List[State]) = {
     val state = actions.foldLeft(start)((prev1, action) => {
       val newHpos =   prev1.head.copy(coord = addTuple(prev1.head.coord, ActionType.value(action.position)))
-      val newStates = prev1.drop(1).foldLeft(List(newHpos))((prev,input) => {
-        val a = prev.last
-        val b = input
-
-        val newTpos = calcNewTPos(b.coord, a.coord)
-        prev.appended(State(b.name, newTpos, b.visited.appended(newTpos)))
+      prev1.drop(1).foldLeft(List(newHpos))((prev,input) => {
+        val newTpos = calcNewTPos(input.coord, prev.last.coord)
+        prev.appended(State(input.name, newTpos, input.visited.appended(newTpos)))
       })
-
-     // printState(newStates)
-      newStates
     })
     val visits = state.last.visited.distinct
     println(visits.size)
