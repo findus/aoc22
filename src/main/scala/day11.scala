@@ -2,8 +2,8 @@ import scala.language.postfixOps
 
 object day11 extends App {
 
-  case class Item(worryLevel: Int)
-  case class Monkey(name: Int, items: List[Item], operator: String, riskToAdd: String, divisibleBy: Int , monkeys: Map[Boolean, Int], itemsInspected: Int)
+  case class Item(worryLevel: Long)
+  case class Monkey(name: Int, items: List[Item], operator: String, riskToAdd: String, divisibleBy: Int , monkeys: Map[Boolean, Long], itemsInspected: Int)
 
   def generateStartingItems(monkeyInput: List[List[String]]) = {
     monkeyInput.map { lines =>
@@ -14,29 +14,33 @@ object day11 extends App {
       val divisibleBy = "Test: divisible by (\\d+)".r.findAllIn(lines(3).trim).matchData.toList.head.group(1)
       val ifTrue = "If true: throw to monkey (\\d+)".r.findAllIn(lines(4).trim).matchData.toList.head.group(1)
       val ifFalse = "If false: throw to monkey (\\d+)".r.findAllIn(lines(5).trim).matchData.toList.head.group(1)
-      Monkey(name, items.map(Item.apply), riskMathmaticalOperator, riskToAdd, divisibleBy.toInt, List((true, ifTrue.toInt), (false, ifFalse.toInt)).toMap,0)
+      Monkey(name, items.map(_.toLong).map(Item.apply), riskMathmaticalOperator, riskToAdd, divisibleBy.toInt, List((true, ifTrue.toLong), (false, ifFalse.toLong)).toMap,0)
     }
   }
 
-  io.load("day11") { lines =>
-    val monkeyInput = lines.sliding(7,7).toList
-    val monkeys = generateStartingItems(monkeyInput)
-
-    val afterRounds = (1 to 20).foldLeft(monkeys)((prev, action) => {
-      val monkeys = prev.indices.foldLeft(prev)((prev, index) => {
-        val actions = calculateThrowingActions(prev(index))
+  private def simulate(monkeys: List[Monkey], range: Range, calculator: Monkey => List[(Item, Long)]) = {
+    range.foldLeft(monkeys)((prev, round) => {
+      val e = prev.indices.foldLeft(prev)((prev, index) => {
+        val actions = calculateThrowingActions(prev(index), calculator)
         val thrown = prev.map(monkey => monkey.copy(items = monkey.items.appendedAll(actions.filter(_._2 == monkey.name).map(_._1))))
-        val ne = thrown.map(m => if (m.name.equals(prev(index).name)) { prev(index).copy(items = List.empty, itemsInspected = prev(index).itemsInspected + actions.length) } else { m })
-        ne
+        thrown.map(m => if (m.name.equals(prev(index).name)) {
+          prev(index).copy(items = List.empty, itemsInspected = prev(index).itemsInspected + actions.length)
+        } else {
+          m
+        })
       })
-      monkeys
+      if (List(1,20,1000,2000).contains(round)) {
+        println(e.map(_.itemsInspected))
+      }
+      e
     })
-
-    println(afterRounds.map(_.itemsInspected).sorted.reverse.slice(0,2).product)
-
   }
 
-  private def calculateThrowingActions(monkey: Monkey) = {
+  private def calculateThrowingActions(monkey: Monkey, calculator: Monkey => List[(Item, Long)]) = {
+    calculator(monkey)
+  }
+
+  private def p1c: Monkey => List[(Item, Long)] = monkey => {
     monkey.items.map { item =>
       val newRisk = monkey.operator match {
         case "*" if monkey.riskToAdd.equals("old") => item.worryLevel * item.worryLevel
@@ -44,12 +48,38 @@ object day11 extends App {
         case "+" if monkey.riskToAdd.equals("old") => item.worryLevel + item.worryLevel
         case "+" => item.worryLevel + monkey.riskToAdd.toInt
       }
-      val boredRiskLevel = (newRisk / 3).floor.toInt
+      val boredRiskLevel = (newRisk / 3).floor.toLong
       (item.copy(boredRiskLevel), monkey.monkeys(boredRiskLevel % monkey.divisibleBy == 0))
     }
   }
 
   io.load("day11") { lines =>
+    val monkeyInput = lines.sliding(7,7).toList
+    val monkeys = generateStartingItems(monkeyInput)
+    println(simulate(monkeys, 1 to 20, p1c).map(_.itemsInspected).sorted.reverse.slice(0,2).product)
+  }
 
+  io.load("day11") { lines =>
+    val monkeyInput = lines.sliding(7,7).toList
+    val monkeys = generateStartingItems(monkeyInput)
+
+    def p2c: Monkey => List[(Item, Long)] = monkey => {
+
+      val mod = monkeys.map(_.divisibleBy).product
+
+      monkey.items.map { item =>
+        val newRisk = monkey.operator match {
+          case "*" if monkey.riskToAdd.equals("old") => (item.worryLevel * item.worryLevel) % mod
+          case "*" => (item.worryLevel * monkey.riskToAdd.toInt) % mod
+          case "+" if monkey.riskToAdd.equals("old") => (item.worryLevel + item.worryLevel) % mod
+          case "+" => (item.worryLevel + monkey.riskToAdd.toInt) % mod
+        }
+        val boredRiskLevel = newRisk
+        (item.copy(boredRiskLevel), monkey.monkeys(boredRiskLevel % monkey.divisibleBy == 0))
+      }
+    }
+
+    val s = simulate(monkeys, 1 to 10000, p2c)
+    println(s.map(_.itemsInspected).sorted.reverse.slice(0,2).map(BigInt.apply).product)
   }
 }
