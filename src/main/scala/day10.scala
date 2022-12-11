@@ -31,7 +31,7 @@ object day10 extends App {
   }
 
   def draw(cycle: Int, registerValue: Int) = {
-    val currentPosInLine = ((cycle - 1) % 40) +1
+    val currentPosInLine = ((cycle - 1) % 40) + 1
     val spritePosition = ((registerValue to registerValue + 2))
     if (spritePosition.contains(currentPosInLine)) {
       print("#")
