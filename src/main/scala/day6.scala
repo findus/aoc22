@@ -1,5 +1,3 @@
-import day5.run
-
 object day6 extends App {
 
   def hasOnlyDifferentChars(list: List[Char]) = {
