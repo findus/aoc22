@@ -6,3 +6,5 @@ lazy val root = (project in file("."))
   .settings(
     name := "aoc22"
   )
+
+libraryDependencies += ("org.scala-lang.modules" %% "scala-parser-combinators" % "2.1.1") // for scalameter 2.13
