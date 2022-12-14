@@ -50,9 +50,9 @@ object day14 extends App {
           import util.control.Breaks._
           while (state.isInstanceOf[Falling]) {
             simulate(position, rocks) match {
-             // case Falling(coord) if coord.y > rocks.maxBy(_.y).y + 3 =>
-             //   state = Endless(coord)
-             //   ()
+              case Falling(coord) if coord.y > rocks.maxBy(_.y).y + 3 =>
+                state = Endless(coord)
+                ()
               case Falling(coord) =>
                 position = coord
                 ()
@@ -69,9 +69,9 @@ object day14 extends App {
     }
 
 
-    //run(1000, allRockCoordinates)
-    //val res = sandCoordinates.toList
-    //println(res.size)
+    run(1000, allRockCoordinates)
+    val res = sandCoordinates.toList
+    println(res.size)
 
     sandCoordinates = List.empty
     run(1000000, allRockCoordinatesB)
