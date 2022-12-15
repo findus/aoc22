@@ -9,12 +9,10 @@ object day15 extends App {
   }
 
   def isOccupied(sensors: List[Sensor], line: Int, range: Range, beacons: List[Coord]) = {
-    println(range)
     val lineCoords = range.map(idx => Coord(idx, line)).toList
     val distanceBetweenSensorsAndLine = lineCoords
       .filter(coord => !beacons.contains(coord))
       .map(l => {
-        println(l)
         sensors.map(s => calcManhattanDistance(s.position, l) <= s.manhattanDistance)
       })
       .filter(list => list.contains(true))
@@ -29,7 +27,6 @@ object day15 extends App {
 
     val positions = parsed
       .map(position => Sensor(Coord(position._1.x, position._1.y), calcManhattanDistance(position._1, position._2)))
-
 
     val lowestX = positions.map(pos => pos.position.x - pos.manhattanDistance).min
     val highestX = positions.map(pos => pos.position.x + pos.manhattanDistance).max
