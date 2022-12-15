@@ -10,16 +10,6 @@ object day15 extends App {
     (a.x - b.x).abs + (a.y - b.y).abs
   }
 
-  def isOccupied(sensors: List[Sensor], line: Int, range: Range, beacons: List[Coord], predicate: (Sensor, Coord) => Boolean) = {
-    val lineCoords = range.map(idx => Coord(idx, line)).toList
-    val distanceBetweenSensorsAndLine = lineCoords
-      .filter(coord => !beacons.contains(coord))
-      .map(l => {
-        sensors.map(s => (l, predicate(s,l)))
-      })
-    distanceBetweenSensorsAndLine
-  }
-
   def getLinesAlongSensor(sensor: Sensor) = {
     val wToc = ((sensor.position.x - sensor.manhattanDistance - 1) to sensor.position.x)
     val cTon = (sensor.position.y to (sensor.position.y - sensor.manhattanDistance - 1))
@@ -30,31 +20,24 @@ object day15 extends App {
     val eastToSouth = cToe.reverse.zip(cTos).map(entry => Coord(entry._1, entry._2))
     val southToWest = wToc.reverse.zip(cTos.reverse).map(entry => Coord(entry._1, entry._2))
     val coords = List(westToNorth, northToEast, eastToSouth, southToWest).flatten
+    coords
   }
 
-  def isOccupied2(sensors: List[Sensor], line: Int, range: Range, beacons: List[Coord], predicate: (Sensor, Coord) => Boolean) = {
-    val lineCoords = range.map(idx => Coord(idx, line)).toList.filter(coord => !beacons.contains(coord))
+  def isOccupied(sensors: List[Sensor], line: Int, range: Range, beacons: List[Coord], predicate: (Sensor, Coord) => Boolean) = {
+    val lineCoords = range.map(idx => Coord(idx, line)).toList
     val distanceBetweenSensorsAndLine = lineCoords
-      .takeWhile(c => {
-        var last = predicate(sensors.head,c)
-        val e = sensors.drop(1).takeWhile(sensor => {
-          val now = predicate(sensor,c)
-          if (last != now) false else {
-            last = now
-            true
-          }
-        })
-        val ef = e.size + 1 != sensors.size
-        ef
+      .filter(coord => !beacons.contains(coord))
+      .map(l => {
+        sensors.map(s => (l, predicate(s,l)))
       })
-
-    if (lineCoords.size != distanceBetweenSensorsAndLine.size) {
-      distanceBetweenSensorsAndLine.lastOption.map(e => Coord(e.x + 1, e.y))
-    } else {
-      None
-    }
-
+    distanceBetweenSensorsAndLine
   }
+
+  def isOccupied(sensors: List[Sensor], coord: Coord, predicate: (Sensor, Coord) => Boolean): List[(Coord, Boolean)] = {
+    val ee = sensors.map(s => (coord, predicate(s,coord))).toList
+    ee
+  }
+
 
   io.load("day15") { lines =>
     val parsed = lines.map {
@@ -65,22 +48,28 @@ object day15 extends App {
     val positions = parsed
       .map(position => Sensor(Coord(position._1.x, position._1.y), calcManhattanDistance(position._1, position._2)))
 
+    val predicate: (Sensor, Coord) => Boolean = (s,l) => calcManhattanDistance(s.position, l) <= s.manhattanDistance
+
     val lowestX = positions.map(pos => pos.position.x - pos.manhattanDistance).min
     val highestX = positions.map(pos => pos.position.x + pos.manhattanDistance).max
     val range = (lowestX to highestX)
     val beacons = parsed.map(_._2)
-    //val occupied = isOccupied(positions, 200000, range, beacons, (s,l) => calcManhattanDistance(s.position, l) <= s.manhattanDistance)
-    // .filter(list => list.exists(_._2)).map(_.head._1)
-    //println(occupied.size)
+    val occupied = isOccupied(positions, 2000000, range, beacons, (s,l) => calcManhattanDistance(s.position, l) <= s.manhattanDistance)
+      .filter(list => list.exists(_._2)).map(_.head._1)
+    println(occupied.size)
 
-    val range2 = (0 to 400000)
-    val searchRange = (0 to 400000).takeWhile(line => {
-      val f = isOccupied2(positions, line, range2, beacons, (s,l) => calcManhattanDistance(s.position, l) > s.manhattanDistance)
-      if (f.isDefined) println((f.get.x * 400000) + f.get.y)
-      true
-    })
+    val box = 4000000
+
+    val spacebeneathSensors = positions.flatMap(getLinesAlongSensor).distinct.filter(coord => coord.x >= 0 && coord.x <= box && coord.y >= 0 && coord.y <= box)
+
+    for (coord <- spacebeneathSensors) {
+      val efffe = isOccupied(positions, coord, predicate)
+      if (efffe.map(_._2).count(e => e == true) == 0) {
+        println((efffe.head._1.x.toLong * 4000000L) + efffe.head._1.y.toLong)
+      }
+    }
 
 
-  }
+    }
 
 }
