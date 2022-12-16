@@ -73,8 +73,7 @@ object day16 extends App {
 
     var iterations = 0;
 
-    //idea from, because I was giga stuck: https://github.com/maneatingape/advent-of-code/blob/main/src/main/scala/AdventOfCode2022/Day16.scala
-    def recursiveLookup(start: String, time: Int, todo: Set[Tunnel], pressure: Int, edges: List[String]): Int = {
+    def goThrough(allGraphDistances: Map[String, Map[String, Int]], start: String, time: Int, todo: Set[Tunnel], pressure: Int, edges: List[String]): Set[Int] = {
       val res = todo.flatMap(next => {
         val expiredTime = time + 1 + allGraphDistances(start)(next.name) // time to open valve + time to get there
         val extra = (30 - expiredTime) * valves.find(_.name.equals(next.name)).get.flow // amount of pressurerelease this valve will emit til the end
@@ -82,11 +81,17 @@ object day16 extends App {
         if (expiredTime < 30) {
           //Next iteration
           iterations += 1
-          Some(recursiveLookup(next.name, expiredTime, todo - next, pressure + extra, edges.appended(next.name)))
+          Some(goThrough(allGraphDistances, next.name, expiredTime, todo - next, pressure + extra, edges.appended(next.name)))
         } else {
           None
         }
       })
+      res.flatten.+(pressure)
+    }
+
+    //idea from, because I was giga stuck: https://github.com/maneatingape/advent-of-code/blob/main/src/main/scala/AdventOfCode2022/Day16.scala
+    def recursiveLookup(start: String, time: Int, todo: Set[Tunnel], pressure: Int, edges: List[String]): Int = {
+      val res: _root_.scala.collection.immutable.Set[Int] = goThrough(allGraphDistances, start, time, todo, pressure, edges)
       val r = res.foldLeft(pressure)((prev, action) => prev.max(action))
       r
     }
@@ -96,5 +101,6 @@ object day16 extends App {
     println("Iterations:",iterations)
 
   }
+
 
 }
