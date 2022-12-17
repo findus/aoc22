@@ -1,6 +1,7 @@
 import day12.{entries, triggered}
 import day7.Folder
 
+import javax.xml.stream.events.StartElement
 import scala.annotation.tailrec
 import scala.collection.mutable
 
@@ -73,31 +74,47 @@ object day16 extends App {
 
     var iterations = 0;
 
-    def goThrough(allGraphDistances: Map[String, Map[String, Int]], start: String, time: Int, todo: Set[Tunnel], pressure: Int, edges: List[String]): Set[Int] = {
+    def goThrough(allGraphDistances: Map[String, Map[String, Int]], me: String, elephantStart: String, elephantTime: Int, time: Int, todo: Set[Tunnel], pressure: Int, edges: List[String]): Set[Int] = {
       val res = todo.flatMap(next => {
-        val expiredTime = time + 1 + allGraphDistances(start)(next.name) // time to open valve + time to get there
+        val expiredTime = time + 1 + allGraphDistances(me)(next.name) // time to open valve + time to get there
         val extra = (30 - expiredTime) * valves.find(_.name.equals(next.name)).get.flow // amount of pressurerelease this valve will emit til the end
         println(edges.appended(next.name))
         if (expiredTime < 30) {
           //Next iteration
           iterations += 1
-          Some(goThrough(allGraphDistances, next.name, expiredTime, todo - next, pressure + extra, edges.appended(next.name)))
+          Some(goThrough(allGraphDistances, next.name, elephantStart, elephantTime, expiredTime, todo - next, pressure + extra, edges.appended(next.name)))
         } else {
           None
         }
       })
-      res.flatten.+(pressure)
+
+      val res2 = todo.flatMap(next => {
+        val expiredTime = elephantTime + 1 + allGraphDistances(elephantStart)(next.name) // time to open valve + time to get there
+        val extra = (30 - expiredTime) * valves.find(_.name.equals(next.name)).get.flow // amount of pressurerelease this valve will emit til the end
+        println(edges.appended(next.name))
+        if (expiredTime < 30) {
+          //Next iteration
+          iterations += 1
+          Some(goThrough(allGraphDistances, me, next.name, expiredTime, time, todo - next, pressure + extra, edges.appended(next.name)))
+        } else {
+          None
+        }
+      })
+
+      res.flatten.+(pressure).toList.concat(res2.flatten).toSet
     }
 
     //idea from, because I was giga stuck: https://github.com/maneatingape/advent-of-code/blob/main/src/main/scala/AdventOfCode2022/Day16.scala
-    def recursiveLookup(start: String, time: Int, todo: Set[Tunnel], pressure: Int, edges: List[String]): Int = {
-      val res: _root_.scala.collection.immutable.Set[Int] = goThrough(allGraphDistances, start, time, todo, pressure, edges)
+    def recursiveLookup(start: String,startElefant: String, timeElefant: Int, time: Int, todo: Set[Tunnel], pressure: Int, edges: List[String]): Int = {
+      val res: _root_.scala.collection.immutable.Set[Int] = goThrough(allGraphDistances, start,startElefant, timeElefant, time, todo, pressure, edges)
       val r = res.foldLeft(pressure)((prev, action) => prev.max(action))
       r
     }
 
-    val d = recursiveLookup("AA", 0, relevantValves.toSet, 0, List.empty)
-    println(d)
+    val p1 = recursiveLookup("AA","AA", 0,30 , relevantValves.toSet, 0, List.empty)
+    val p2 = recursiveLookup("AA","AA", 4,4 , relevantValves.toSet, 0, List.empty)
+    println(p1)
+    println(p2)
     println("Iterations:",iterations)
 
   }
