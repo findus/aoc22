@@ -55,7 +55,7 @@ object day17 extends App {
     def moveVertically = copy( position = (this.position._1, this.position._2 - 1))
   }
 
-  case class State(rocks: List[RockPos], spawnHeight: Int, currentRock: RockPos) {
+  case class State(rocks: List[RockPos], spawnHeight: Int, currentRock: RockPos, rockIter: Iterator[Rock], windIter: Iterator[Char]) {
 
     def collides(rock: RockPos): Boolean = {
       val absolutePosition = rock.getAbsolutePositions()
@@ -93,15 +93,6 @@ object day17 extends App {
     val vc = Rock("pipe",asCoord(pipeShape))
     val qc = Rock("quad",asCoord(quadShape))
 
-    val roundRobin = Iterator.continually(List(mc,pc,lc,vc,qc)).flatten
-    val wind = lines.head.map(e => e).toList
-    val windRoundRobin = Iterator.continually(wind).flatten
-
-    val next = roundRobin.next()
-    val initHeight = 3 + next.getHeight()
-    val rockPos = RockPos(next, (2,initHeight))
-    val state = State(List.empty, initHeight, rockPos)
-
     @tailrec
     def fall(state: State, falling: Boolean ): State = {
 
@@ -109,17 +100,17 @@ object day17 extends App {
         return state
       }
 
-      val wind = windRoundRobin.next()
+      val wind = state.windIter.next()
       val newRockPos = state.currentRock.moveHorizontally(wind)
       val newPosBeforeFalling = if (state.collides(newRockPos)) state.currentRock else newRockPos
       val newPosAfterFalling = newPosBeforeFalling.moveVertically
 
       if (state.collides(newPosAfterFalling)) {
-        val nextRock = roundRobin.take(1).toList.head
+        val nextRock = state.rockIter.take(1).toList.head
         val newSpawnHeight = (state.copy(rocks = state.rocks.appended(newPosBeforeFalling)).highestPoint - 1) + nextRock.getHeight() + 3
         fall(state.copy(rocks = state.rocks.appended(newPosBeforeFalling), spawnHeight = newSpawnHeight, currentRock = RockPos(nextRock, (2,newSpawnHeight))), false)
       } else if (newPosAfterFalling.position._2 == 0) {
-        val nextRock = roundRobin.take(1).toList.head
+        val nextRock = state.rockIter.take(1).toList.head
         val newSpawnHeight = (state.copy(rocks = state.rocks.appended(newPosAfterFalling)).highestPoint - 1) + nextRock.getHeight() + 3
         fall(state.copy(rocks = state.rocks.appended(newPosAfterFalling), spawnHeight = newSpawnHeight, currentRock = RockPos(nextRock, (2,newSpawnHeight))), false)
       }else {
@@ -134,11 +125,29 @@ object day17 extends App {
     }
 
     def iterate() = {
+      val rockIterator = getRockIterator()
+      val windIterator = getWindIterator()
+      val next = rockIterator.next()
+      val initHeight = 3 + next.getHeight()
+      val rockPos = RockPos(next, (2,initHeight))
+
+      val state = State(List.empty, initHeight, rockPos, rockIterator, windIterator)
       Iterator.iterate(state)(round)
+    }
+
+    def getRockIterator() = Iterator.continually(List(mc,pc,lc,vc,qc)).flatten
+
+    def getWindIterator() = {
+      val wind = lines.head.map(e => e).toList
+      Iterator.continually(wind).flatten
     }
 
     val highest = iterate().drop(2022).next().highestPoint
     println(highest)
+
+    (1000 to 3000).map(r => {
+
+    })
 
   }
 
