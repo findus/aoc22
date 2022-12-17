@@ -1,3 +1,5 @@
+import scala.annotation.tailrec
+
 object day17 extends App {
 
 
@@ -68,7 +70,7 @@ object day17 extends App {
     }
 
     def highestPoint = {
-      rocks.maxBy(_.position._2).position._2
+      (rocks.maxBy(_.position._2).position._2) + 1
     }
 
     def draw(): Unit = {
@@ -80,6 +82,7 @@ object day17 extends App {
         }
         println("")
       }}
+      println("")
     }
   }
 
@@ -99,40 +102,44 @@ object day17 extends App {
     val rockPos = RockPos(next, (2,initHeight))
     val state = State(List.empty, initHeight, rockPos)
 
-    val st = (1 to 2022).foldLeft(state)((prev, action) => {
-      var falling = true
-      var tempState = prev
-      while (falling) {
-        val wind = windRoundRobin.next()
-        val newRockPos = tempState.currentRock.moveHorizontally(wind)
-        val newPosBeforeFalling = if (tempState.collides(newRockPos)) tempState.currentRock else newRockPos
-        val newPosAfterFalling = newPosBeforeFalling.moveVertically
+    @tailrec
+    def fall(state: State, falling: Boolean ): State = {
 
-        if (tempState.collides(newPosAfterFalling)) {
-          val nextRock = roundRobin.take(1).toList.head
-          val newSpawnHeight = tempState.copy(rocks = tempState.rocks.appended(newPosBeforeFalling)).highestPoint + nextRock.getHeight() + 3
-          tempState = tempState.copy(rocks = tempState.rocks.appended(newPosBeforeFalling), spawnHeight = newSpawnHeight, currentRock = RockPos(nextRock, (2,newSpawnHeight)))
-          falling = false
-        } else if (newPosAfterFalling.position._2 == 0) {
-          val nextRock = roundRobin.take(1).toList.head
-          val newSpawnHeight = tempState.copy(rocks = tempState.rocks.appended(newPosAfterFalling)).highestPoint + nextRock.getHeight() + 3
-          tempState = tempState.copy(rocks = tempState.rocks.appended(newPosAfterFalling), spawnHeight = newSpawnHeight, currentRock = RockPos(nextRock, (2,newSpawnHeight)))
-          falling = false
-        }else {
-          tempState = tempState.copy(currentRock = newPosAfterFalling)
-        }
-
+      if (!falling) {
+        return state
       }
 
-      //tempState.draw()
-      //println("")
+      val wind = windRoundRobin.next()
+      val newRockPos = state.currentRock.moveHorizontally(wind)
+      val newPosBeforeFalling = if (state.collides(newRockPos)) state.currentRock else newRockPos
+      val newPosAfterFalling = newPosBeforeFalling.moveVertically
 
-      tempState
-    })
+      if (state.collides(newPosAfterFalling)) {
+        val nextRock = roundRobin.take(1).toList.head
+        val newSpawnHeight = (state.copy(rocks = state.rocks.appended(newPosBeforeFalling)).highestPoint - 1) + nextRock.getHeight() + 3
+        fall(state.copy(rocks = state.rocks.appended(newPosBeforeFalling), spawnHeight = newSpawnHeight, currentRock = RockPos(nextRock, (2,newSpawnHeight))), false)
+      } else if (newPosAfterFalling.position._2 == 0) {
+        val nextRock = roundRobin.take(1).toList.head
+        val newSpawnHeight = (state.copy(rocks = state.rocks.appended(newPosAfterFalling)).highestPoint - 1) + nextRock.getHeight() + 3
+        fall(state.copy(rocks = state.rocks.appended(newPosAfterFalling), spawnHeight = newSpawnHeight, currentRock = RockPos(nextRock, (2,newSpawnHeight))), false)
+      }else {
+        fall(state.copy(currentRock = newPosAfterFalling), true)
+      }
+    }
 
-    println(st.highestPoint + 1)
-    val e = st.rocks.groupBy(_.position._2).map { case (k,v) => (k,v.map(_.position._1)) }.groupBy(_._2).filter(_._2.size > 1)
-    println(e)
+    def round(state: State): State = {
+      val st = fall(state, true)
+     // st.draw()
+      st
+    }
+
+    def iterate() = {
+      Iterator.iterate(state)(round)
+    }
+
+    val highest = iterate().drop(2022).next().highestPoint
+    println(highest)
+
   }
 
 }
