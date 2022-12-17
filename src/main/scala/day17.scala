@@ -38,12 +38,12 @@ object day17 extends App {
     }).toSet
   }
 
-  case class Rock(list: Set[(Int,Int)]) {
+  case class Rock(name: String,list: Set[(Int,Int)]) {
     def getHeight() = list.map(_._2).max + 1
   }
 
   case class RockPos(rock: Rock, position: (Int,Int)) {
-    def getAbsolutePositions() = rock.list.map { case (x,y) => (x + position._1, position._2 -y) } //TODO y calculation wrong
+    def getAbsolutePositions() = rock.list.map { case (x,y) => (x + position._1, position._2 -y) }
     def moveHorizontally(location: Char) = {
       copy( position = location match {
         case '>' => (this.position._1 + 1, this.position._2)
@@ -63,8 +63,8 @@ object day17 extends App {
       }
 
       val allOtherPositions = rocks.flatMap(_.getAbsolutePositions()).toSet
-      val collideingPoints = allOtherPositions.intersect(absolutePosition).size
-      collideingPoints > 0
+      val collidingPoints = allOtherPositions.intersect(absolutePosition).size
+      collidingPoints > 0
     }
 
     def highestPoint = {
@@ -84,11 +84,11 @@ object day17 extends App {
   }
 
   io.load("day17") { lines =>
-    val mc = Rock(asCoord(minusShape))
-    val pc = Rock(asCoord(plusShape))
-    val lc = Rock(asCoord(lShape))
-    val vc = Rock(asCoord(pipeShape))
-    val qc = Rock(asCoord(quadShape))
+    val mc = Rock("minus",asCoord(minusShape))
+    val pc = Rock("plus",asCoord(plusShape))
+    val lc = Rock("L",asCoord(lShape))
+    val vc = Rock("pipe",asCoord(pipeShape))
+    val qc = Rock("quad",asCoord(quadShape))
 
     val roundRobin = Iterator.continually(List(mc,pc,lc,vc,qc)).flatten
     val wind = lines.head.map(e => e).toList
@@ -131,6 +131,8 @@ object day17 extends App {
     })
 
     println(st.highestPoint + 1)
+    val e = st.rocks.groupBy(_.position._2).map { case (k,v) => (k,v.map(_.position._1)) }.groupBy(_._2).filter(_._2.size > 1)
+    println(e)
   }
 
 }
