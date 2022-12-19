@@ -8,7 +8,7 @@ object  day19 extends App {
   case class State(blueprint: Blueprint, ore_robots: RobotState, clay_robots: RobotState, obsidian_robots: RobotState, geode_robots: RobotState, ore: Int, clay: Int, obsidian: Int, geode: Int, passedMinutes: Int, queue: Map[String, List[Int]])
   case class Costs(name: String, ore: Int, clay: Int, obsidian: Int) {
     def buildable(state: State) = {
-      val newEntry = state.queue.get(name).map(e => e.appended(1)).getOrElse(List(1))
+      val newEntry = state.queue.get(name).map(e => e.appended(0)).getOrElse(List(0))
       val newMap = state.queue + ((name,newEntry))
       val buildable = state.ore >= ore && state.clay >= clay && state.obsidian >= obsidian
       val newState = if (buildable) Some(state.copy(ore = state.ore - ore, clay = state.clay - clay, obsidian = state.obsidian - obsidian, queue = newMap)) else None
@@ -24,21 +24,38 @@ object  day19 extends App {
 
   def simulate(state: State): State = {
     val newTime = state.passedMinutes + 1
-    if (newTime == 24) return state.copy(passedMinutes = newTime)
+    println(newTime)
 
-    val ready = state.queue.map { case (k,v) => (k,v.map(n => n - 1)) }.map { case (k,v) => (k, v.partition(n => n == 0)) }
-    val remaining = ready.map { case (k,v) => (k, v._2) }
+    val stateAfterTimeUpdate = state.copy(passedMinutes = newTime)
 
-    val stateAfterBotUpdate = state.copy(queue = remaining, passedMinutes = newTime)
+    val clayBuildable = stateAfterTimeUpdate.blueprint.clay_robot_costs.buildable(stateAfterTimeUpdate)
+    val oreBuildable = stateAfterTimeUpdate.blueprint.ore_robot_costs.buildable(stateAfterTimeUpdate)
+    val obsidianBuildable = stateAfterTimeUpdate.blueprint.obsidian_robot_costs.buildable(stateAfterTimeUpdate)
+    val geodeBuildable = stateAfterTimeUpdate.blueprint.geode_robot_costs.buildable(stateAfterTimeUpdate)
+    val doNothing = stateAfterTimeUpdate
+    val nstates = List(geodeBuildable, obsidianBuildable, oreBuildable, clayBuildable).appended(Some(doNothing))
 
-    val clayBuildable = stateAfterBotUpdate.blueprint.clay_robot_costs.buildable(stateAfterBotUpdate)
-    val oreBuildable = stateAfterBotUpdate.blueprint.ore_robot_costs.buildable(stateAfterBotUpdate)
-    val obsidianBuildable = stateAfterBotUpdate.blueprint.obsidian_robot_costs.buildable(stateAfterBotUpdate)
-    val geodeBuildable = stateAfterBotUpdate.blueprint.geode_robot_costs.buildable(stateAfterBotUpdate)
-    val doNothing = stateAfterBotUpdate
-    val states = List(geodeBuildable, obsidianBuildable, oreBuildable, clayBuildable).flatten.appended(doNothing)
+    val states =
+      if (newTime == 3 || newTime == 5 || newTime == 7 || newTime == 12) {
+        println("clay")
+        List(nstates(3).get)
+      } else if (newTime == 11 || newTime == 15) {
+        println("obsidian")
+        List(nstates(1).get)
+      } else if (newTime == 18 || newTime == 21) {
+        println("geode")
+        List(nstates(0).get)
+      } else {
+        println("do nothing")
+        List(nstates.last.get)
+      }
 
     val results = states.map(newState => {
+
+      val ready = newState.queue.map { case (k,v) => (k,v.map(n => n - 1)) }.map { case (k,v) => (k, v.partition(n => n == -1)) }
+      val remaining = ready.map { case (k,v) => (k, v._2) }
+
+
       val newOre = newState.ore + newState.ore_robots.amount
       val newClay = newState.clay + newState.clay_robots.amount
       val newObsidian = newState.obsidian + newState.obsidian_robots.amount
@@ -54,7 +71,8 @@ object  day19 extends App {
         }
       })
 
-      val newestNewestState = newestState.copy(ore = newOre, clay = newClay, obsidian = newObsidian, geode = newGeode)
+      val newestNewestState = newestState.copy(ore = newOre, clay = newClay, obsidian = newObsidian, geode = newGeode, queue = remaining)
+      if (newTime == 24) return newestNewestState
       simulate(newestNewestState)
     })
     val geode = results.maxBy(_.geode)
