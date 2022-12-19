@@ -1,4 +1,5 @@
 import scala.annotation.tailrec
+import scala.collection.mutable
 
 object  day19 extends App {
 
@@ -22,9 +23,10 @@ object  day19 extends App {
                       geode_robot_costs: Costs
                       )
 
+  val firstGeode: mutable.Stack[Int] = new mutable.Stack()
+
   def simulate(state: State): State = {
     val newTime = state.passedMinutes + 1
-    println(newTime)
 
     val stateAfterTimeUpdate = state.copy(passedMinutes = newTime)
 
@@ -33,24 +35,19 @@ object  day19 extends App {
     val obsidianBuildable = stateAfterTimeUpdate.blueprint.obsidian_robot_costs.buildable(stateAfterTimeUpdate)
     val geodeBuildable = stateAfterTimeUpdate.blueprint.geode_robot_costs.buildable(stateAfterTimeUpdate)
     val doNothing = stateAfterTimeUpdate
-    val nstates = List(geodeBuildable, obsidianBuildable, oreBuildable, clayBuildable).appended(Some(doNothing))
+    val states = List(geodeBuildable, obsidianBuildable, oreBuildable, clayBuildable).flatten.appended(doNothing)
 
-    val states =
-      if (newTime == 3 || newTime == 5 || newTime == 7 || newTime == 12) {
-        println("clay")
-        List(nstates(3).get)
-      } else if (newTime == 11 || newTime == 15) {
-        println("obsidian")
-        List(nstates(1).get)
-      } else if (newTime == 18 || newTime == 21) {
-        println("geode")
-        List(nstates(0).get)
-      } else {
-        println("do nothing")
-        List(nstates.last.get)
+    val meem = if (geodeBuildable.isDefined) { List(geodeBuildable.get) } else { states }
+
+    val results = meem.map(newState => {
+
+      if (newState.geode_robots.amount > 0 && !firstGeode.contains(newState.geode_robots.amount)) {
+        firstGeode.push(newTime)
       }
 
-    val results = states.map(newState => {
+      if (firstGeode.minOption.isDefined && (firstGeode.min < newTime) && newState.geode_robots.amount == 0 ) {
+        return newState
+      }
 
       val ready = newState.queue.map { case (k,v) => (k,v.map(n => n - 1)) }.map { case (k,v) => (k, v.partition(n => n == -1)) }
       val remaining = ready.map { case (k,v) => (k, v._2) }
@@ -72,7 +69,9 @@ object  day19 extends App {
       })
 
       val newestNewestState = newestState.copy(ore = newOre, clay = newClay, obsidian = newObsidian, geode = newGeode, queue = remaining)
-      if (newTime == 24) return newestNewestState
+      if (newTime == 24) {
+        return newestNewestState
+      }
       simulate(newestNewestState)
     })
     val geode = results.maxBy(_.geode)
@@ -96,9 +95,8 @@ object  day19 extends App {
 
     val initialState = State(parsedInput.head, RobotState(1), RobotState(0), RobotState(0), RobotState(0),0 ,0 ,0 ,0 ,0, Map.empty)
     val result = simulate(initialState)
-    println(result)
+    println(result.geode)
 
-    println(parsedInput)
   }
 
 }
