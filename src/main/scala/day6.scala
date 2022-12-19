@@ -1,4 +1,4 @@
-object day6 extends App {
+object  day6 extends App {
 
   def hasOnlyDifferentChars(list: List[Char]) = {
     list.sorted.distinct.length == list.length
