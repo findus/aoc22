@@ -5,16 +5,16 @@ object  day20 extends App {
   case class Entry(idx: Int, value: Int, next: Entry, prev: Entry)
 
   def iterate(state : State): State = {
-    val arr_len = state.list.length
+    val arr_len = (state.list.length - 1)
     val from = state.list.indexWhere(_._2 == state.idx)
     val n = from + state.list(from)._1
     val newIdx = if (n >= state.list.length)
-      (n % arr_len) + 1
+      (n % arr_len)
     else if (n < 0)
-      (arr_len - (n.abs % arr_len) - 1)
+      (arr_len - (n.abs % arr_len))
     else if (n == 0)
-      arr_len - 1
-    else if (n == (arr_len -1))
+      arr_len
+    else if (n == (arr_len))
       0
     else
       n
@@ -24,6 +24,7 @@ object  day20 extends App {
     } else {
       state.copy(idx = state.idx + 1)
     }
+    println(newState)
     newState
   }
 
