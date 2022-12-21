@@ -93,18 +93,6 @@ object day21 extends App {
     }
     println(resultVal)
 
-
-    val map2 = genMonkeysWithMeNr(lines, 3441198826073L)
-    println(solve(monkehs.filter(_.name.equals(root1)).head, genMonkeysWithMeNr(lines, 3441198826072L)))
-    println(solve(monkehs.filter(_.name.equals(root1)).head, genMonkeysWithMeNr(lines, 3441198826073L)))
-    println(solve(monkehs.filter(_.name.equals(root1)).head, genMonkeysWithMeNr(lines, 3441198826074L)))
-    println(solve(monkehs.filter(_.name.equals(root1)).head, genMonkeysWithMeNr(lines, 3441198826075L)))
-    println(solve(monkehs.filter(_.name.equals(root1)).head, genMonkeysWithMeNr(lines, 3441198826076L)))
-    println(solve(monkehs.filter(_.name.equals(root1)).head, genMonkeysWithMeNr(lines, 3441198826077L)))
-    println(solve(monkehs.filter(_.name.equals(root1)).head, genMonkeysWithMeNr(lines, 3441198826078L)))
-    println(solve(monkehs.filter(_.name.equals(root1)).head, genMonkeysWithMeNr(lines, 3441198826079L)))
-    println(solve(monkehs.filter(_.name.equals(root1)).head, genMonkeysWithMeNr(lines, 3441198826080L)))
-
   }
 
 }
