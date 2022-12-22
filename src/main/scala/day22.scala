@@ -13,7 +13,7 @@ object day22 extends App {
     override def compare(a: Point, b: Point): Int = if (a.y == b.y) a.x - b.x else b.y - a.y
   }
 
-  def simulate(state: State, instruction: Char, grid: SortedMap[Point, Char], lines: List[String], startsX: List[Int], endsX: List[Int], startsY: List[Int], endsY: List[Int]): State = {
+  def simulate(state: State, instruction: (Int,Char), grid: SortedMap[Point, Char], lines: List[String], startsX: List[Int], endsX: List[Int], startsY: List[Int], endsY: List[Int]): State = {
     def wouldBeStuck(position: Point) = {
       grid(position).equals('#')
     }
@@ -22,26 +22,14 @@ object day22 extends App {
     }
     def wrap(direction: String, oldPosition: Point): Point = {
       val newPos = direction match {
-        case "E" => {
-          val e = Point(startsX(oldPosition.y), oldPosition.y)
-          e
-        }
-        case "W" => {
-          val e = Point(endsX(oldPosition.y), oldPosition.y)
-          e
-        }
-        case "N" => {
-          val e = Point(oldPosition.x, endsY(oldPosition.x))
-          e
-        }
-        case "S" => {
-          val e = Point(oldPosition.x, startsY(oldPosition.x))
-          e
-        }
+        case "E" => Point(startsX(oldPosition.y), oldPosition.y)
+        case "W" => Point(endsX(oldPosition.y), oldPosition.y)
+        case "N" => Point(oldPosition.x, endsY(oldPosition.x))
+        case "S" => Point(oldPosition.x, startsY(oldPosition.x))
       }
       if (wouldBeStuck(newPos)) oldPosition else newPos
     }
-    def move(facing: String) = {
+    def move(facing: String, point: Point) = {
       val direction = facing match {
         case "W" => (-1, 0)
         case "S" => ( 0, 1)
@@ -49,46 +37,36 @@ object day22 extends App {
         case "N" => ( 0,-1)
       }
 
-      val newPos = Point(state.position.x + direction._1, state.position.y + direction._2)
+      val newPos = Point(point.x + direction._1, point.y + direction._2)
        newPos match {
-        case x if !shouldWrap(x) && wouldBeStuck(x) => {
-          state.position
-        }
-        case x if shouldWrap(x) => {
-          wrap(facing,state.position)
-        }
-        case x if !shouldWrap(x) && !wouldBeStuck(x) => {
-          x
-        }
+        case x if !shouldWrap(x) && wouldBeStuck(x) => point
+        case x if shouldWrap(x) => wrap(facing,point)
+        case x if !shouldWrap(x) && !wouldBeStuck(x) => x
        }
     }
 
-    instruction match {
-      case i if i.isDigit =>
-        val newPosition = move(state.facing)
-        println(newPosition)
-        State(newPosition, state.facing)
-      case f if !f.isDigit =>
-        State(state.position, f match {
-          case f if state.facing.equals("W") && f.equals('L') => "S"
-          case f if state.facing.equals("W") && f.equals('R') => "N"
-          case f if state.facing.equals("N") && f.equals('L') => "W"
-          case f if state.facing.equals("N") && f.equals('R') => "E"
-          case f if state.facing.equals("E") && f.equals('L') => "N"
-          case f if state.facing.equals("E") && f.equals('R') => "S"
-          case f if state.facing.equals("S") && f.equals('L') => "E"
-          case f if state.facing.equals("S") && f.equals('R') => "W"
-        })
-    }
+    val newState = (1 to instruction._1).foldLeft(state.position)((prev,_) => move(state.facing, prev))
+
+    State(newState, instruction._2 match {
+      case f if state.facing.equals("W") && f.equals('L') => "S"
+      case f if state.facing.equals("W") && f.equals('R') => "N"
+      case f if state.facing.equals("N") && f.equals('L') => "W"
+      case f if state.facing.equals("N") && f.equals('R') => "E"
+      case f if state.facing.equals("E") && f.equals('L') => "N"
+      case f if state.facing.equals("E") && f.equals('R') => "S"
+      case f if state.facing.equals("S") && f.equals('L') => "E"
+      case f if state.facing.equals("S") && f.equals('R') => "W"
+      case _ => state.facing
+    })
   }
 
   io.load("day22") { lines =>
     val instructions =
-      regex1.findAllIn(lines.last).matchData.toList.map(_.toString).flatMap { case line =>
+      regex1.findAllIn(lines.last).matchData.toList.map(_.toString).map { case line =>
       val facing = line.last
       val amount = Integer.parseInt(line.dropRight(1))
-      (0 until amount).map(_ => '1').appended(facing).toList
-    }.concat((0 until Integer.parseInt(lines.last.substring(lines.last.length - 2))).map(_ => '1'))
+        (amount, facing)
+    }.appended((Integer.parseInt(lines.last.substring(lines.last.length - 2)),'C'))
 
 
     val linesWithoutInstructions = lines.dropRight(1).filter(_.isEmpty == false)
