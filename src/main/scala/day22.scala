@@ -79,7 +79,7 @@ class CubeSimulator(grid: SortedMap[Point, Char], startsX: List[Int], endsX: Lis
         case (Point(2,2),Point(2,0)) => (stuck(Point(0*chunkSize + ((chunkSize - 1) - yOffset ),(2*chunkSize - 1))), "N")
         // 3 to 1
         case (Point(1,1),Point(1,0)) => (stuck(Point(2*chunkSize, 0*chunkSize + yOffset)), "E")
-        case _ =>  (stuck(newPosition), prev._2)
+        case _  =>  (stuck(newPosition), prev._2)
       }
       val d = e._1.map(issome => (issome,e._2)).getOrElse((prev._1,prev._2))
       d
