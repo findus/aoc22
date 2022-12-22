@@ -3,6 +3,8 @@ import scala.collection.SortedMap
 object day22 extends App {
 
   val regex1 = "(\\d+[A-Z])".r
+  val regex2 = "(\\d+)".r
+
   case class State(position: Point, facing: String)
   case class Point(x: Int, y: Int) extends Ordering[Point] with Ordered[Point] {
     override def compare(a: Point, b: Point): Int = if (a.y == b.y) a.x - b.x else b.y - a.y
@@ -13,7 +15,7 @@ object day22 extends App {
     override def compare(a: Point, b: Point): Int = if (a.y == b.y) a.x - b.x else b.y - a.y
   }
 
-  def simulate(state: State, instruction: (Int,Char), grid: SortedMap[Point, Char], lines: List[String], startsX: List[Int], endsX: List[Int], startsY: List[Int], endsY: List[Int]): State = {
+  def simulate1(state: State, instruction: (Int,Char), grid: SortedMap[Point, Char], startsX: List[Int], endsX: List[Int], startsY: List[Int], endsY: List[Int]): State = {
     def wouldBeStuck(position: Point) = {
       grid(position).equals('#')
     }
@@ -60,29 +62,26 @@ object day22 extends App {
     })
   }
 
-  io.load("day22") { lines =>
+  private def parse(lines: List[String]) = {
     val instructions =
       regex1.findAllIn(lines.last).matchData.toList.map(_.toString).map { case line =>
-      val facing = line.last
-      val amount = Integer.parseInt(line.dropRight(1))
+        val facing = line.last
+        val amount = Integer.parseInt(line.dropRight(1))
         (amount, facing)
-    }.appended((Integer.parseInt(lines.last.substring(lines.last.length - 2)),'C'))
+      }.appended(regex2.findAllMatchIn(lines.last).map(_.start).toList.last , 'C')
 
 
     val linesWithoutInstructions = lines.dropRight(1).filter(_.isEmpty == false)
     val maxX = linesWithoutInstructions.maxBy(_.length).length
     val maxY = linesWithoutInstructions.length
-    val paddedList = linesWithoutInstructions.map(_.padTo(maxX,' '))
+    val paddedList = linesWithoutInstructions.map(_.padTo(maxX, ' '))
     val transposed = paddedList.transpose.map(e => e.mkString(""))
 
     val seq =
       (0 until maxY).flatMap { case y =>
         (0 to maxX).map { case x =>
           val character = if (linesWithoutInstructions(y).length > x) {
-            linesWithoutInstructions(y)(x) match {
-              case ' ' => ' '
-              case x   => x
-            }
+            linesWithoutInstructions(y)(x)
           } else {
             ' '
           }
@@ -90,29 +89,45 @@ object day22 extends App {
         }
       }
 
-    val startsX = linesWithoutInstructions.map( line => "[#.]".r.findFirstMatchIn(line).map(_.start).get)
-    val endsX = linesWithoutInstructions.map( line => "[#.]".r.findAllMatchIn(line).map(_.start).toList.last)
+    val startsX = linesWithoutInstructions.map(line => "[#.]".r.findFirstMatchIn(line).map(_.start).get)
+    val endsX = linesWithoutInstructions.map(line => "[#.]".r.findAllMatchIn(line).map(_.start).toList.last)
 
-    val startsY = transposed.map( line => "[#.]".r.findFirstMatchIn(line).map(_.start).get)
-    val endsY = transposed.map( line => "[#.]".r.findAllMatchIn(line).map(_.start).toList.last)
+    val startsY = transposed.map(line => "[#.]".r.findFirstMatchIn(line).map(_.start).get)
+    val endsY = transposed.map(line => "[#.]".r.findAllMatchIn(line).map(_.start).toList.last)
     val grid = SortedMap.from(seq)(ordered)
 
-    val start = Point(linesWithoutInstructions.head.indexOf("."),0)
+    val start = Point(linesWithoutInstructions.head.indexOf("."), 0)
     val state = State(start, "E")
 
-    val finalState = instructions.foldLeft(state)((prev, action) => simulate(prev, action, grid, linesWithoutInstructions, startsX, endsX, startsY, endsY))
-
-    val facingval = finalState.facing match {
+    val facingval = (state: State) => state.facing  match {
       case "N" => 3
       case "W" => 2
       case "E" => 0
       case "S" => 1
     }
 
+    (instructions, startsX, endsX, startsY, endsY, grid, state, facingval)
+  }
+
+  io.load("day22") { lines =>
+    val (instructions: List[(Int, Char)], startsX: List[Int], endsX: List[Int], startsY: List[Int], endsY: List[Int], grid: SortedMap[Point, Char], state: State, facing: (State => Int)) = parse(lines)
+    val finalState = instructions.foldLeft(state)((prev, action) => simulate1(prev, action, grid, startsX, endsX, startsY, endsY))
+
     val row = finalState.position.y + 1
     val column = finalState.position.x + 1
 
-    val result = (1000 * row + 4 * column + facingval)
+    val result = (1000 * row + 4 * column + facing(state))
+    println(result)
+  }
+
+  io.load("day22") { lines =>
+    val (instructions: List[(Int, Char)], startsX: List[Int], endsX: List[Int], startsY: List[Int], endsY: List[Int], grid: SortedMap[Point, Char], state: State, facing: (State => Int)) = parse(lines)
+    val finalState = instructions.foldLeft(state)((prev, action) => simulate1(prev, action, grid, startsX, endsX, startsY, endsY))
+
+    val row = finalState.position.y + 1
+    val column = finalState.position.x + 1
+
+    val result = (1000 * row + 4 * column + facing(state))
     println(result)
   }
 }
