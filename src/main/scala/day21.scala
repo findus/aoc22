@@ -33,34 +33,28 @@ object day21 extends App {
   }
 
   private def genMonkeysWithMeNr(lines: List[String], nr: Double) = {
-    val map = parseMonkehs(lines)
+    parseMonkehs(lines)
       .map {
-        case me if me.name.equals("humn") =>{
-          me.asInstanceOf[NumberMonkeh].copy(nr = nr)
-        }
+        case me if me.name.equals("humn") => me.asInstanceOf[NumberMonkeh].copy(nr = nr)
         case smelse => smelse
       }
       .map(m => (m.name, m)).toMap
-    map
   }
 
-  trait Monkeh {
-    def name: String
-  }
-
+  trait Monkeh { def name: String }
   case class NumberMonkeh(name: String, nr: Double) extends Monkeh
-
   case class DependentMonkeh(name: String, x1: String, x2: String, operant: String) extends Monkeh
 
   io.load("day21") { lines =>
     val monkehs = parseMonkehs(lines)
     val map = monkehs.map(m => (m.name, m)).toMap
+    println(printEquation(monkehs.filter(_.name.equals("root")).head, map))
     println(solve(monkehs.filter(_.name.equals("root")).head, map))
   }
 
   io.load("day21") { lines =>
     val monkehs = parseMonkehs(lines)
-    val tuple = lines.find(_.contains("root")).map { case regex1(mname, x1, operant, x2) => (x1, x2) }.head
+    val tuple = lines.find(_.contains("root")).map { case regex1(_, x1, _, x2) => (x1, x2) }.head
 
     val root1 = tuple._1
     val root2 = tuple._2
@@ -70,22 +64,22 @@ object day21 extends App {
     var min = 400000000000L
     var max = 4000000000000L
 
-    val val1 = solve(monkehs.filter(_.name.equals(root2)).head, m1)
+    val nrToSearch = solve(monkehs.filter(_.name.equals(root2)).head, m1)
     var solved = false
     var resultVal = -1L
     while (!solved) {
       val middle = (min + max) / 2
       val map2 = genMonkeysWithMeNr(lines, middle)
       val result = solve(monkehs.filter(_.name.equals(root1)).head, map2)
-      if (result < val1) {
+      if (result < nrToSearch) {
         max = middle - 1
       }
-      else if (result > val1) {
+      else if (result > nrToSearch) {
         min = middle + 1
       }
       else {
         solved = true
-        println("a:", val1)
+        println("a:", nrToSearch)
         println("b:", result)
         println("my number:", middle)
       }
