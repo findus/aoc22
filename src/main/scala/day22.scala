@@ -233,15 +233,15 @@ object day22 extends App {
   }
 
   io.load("day22") { lines =>
-//    val (instructions: List[(Int, Char)], startsX: List[Int], endsX: List[Int], startsY: List[Int], endsY: List[Int], grid: SortedMap[Point, Char], state: State, facing: (State => Int)) = parse(lines)
-//    val simulator = new Simulator(grid, startsX, endsX, startsY, endsY)
-//    val finalState = instructions.foldLeft(state)((prev, action) => simulator.simulate(prev, action))
-//
-//    val row = finalState.position.y + 1
-//    val column = finalState.position.x + 1
-//
-//    val result = (1000 * row + 4 * column + facing(state))
-//    println(result)
+    val (instructions: List[(Int, Char)], startsX: List[Int], endsX: List[Int], startsY: List[Int], endsY: List[Int], grid: SortedMap[Point, Char], state: State, facing: (State => Int)) = parse(lines)
+    val simulator = new Simulator(grid, startsX, endsX, startsY, endsY)
+    val finalState = instructions.foldLeft(state)((prev, action) => simulator.simulate(prev, action))
+
+    val row = finalState.position.y + 1
+    val column = finalState.position.x + 1
+
+    val result = (1000 * row + 4 * column + facing(state))
+    println(result)
   }
 
   io.load("day22") { lines =>
