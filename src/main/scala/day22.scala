@@ -133,23 +133,23 @@ class CubeSimulator(grid: SortedMap[Point, Char], startsX: List[Int], endsX: Lis
         // 3 to 4
         case (Point(1,1),Point(0,2)) => (stuck(Point(xOffset, (2*chunkSize))), "S")
         // 4 to 1
-        case (Point(0,2),Point(1,0)) =>(stuck(Point(1*chunkSize, (1*chunkSize) - xOffset)), "E")
+        case (Point(0,2),Point(1,0)) => (stuck(Point(1*chunkSize, (1*chunkSize) - xOffset - 1)), "E")
         // 1 to 4
-        case (Point(1,0),Point(0,2)) => (stuck(Point(0, (2*chunkSize + xOffset))), "E")
+        case (Point(1,0),Point(0,2)) => (stuck(Point(0, (2*chunkSize + (49 - xOffset)))), "E")
         // 1 to 6
         case (Point(1,0),Point(0,3)) => (stuck(Point(0, (3*chunkSize + yOffset))), "E")
         // 6 to 1
         case (Point(0,3),Point(1,0)) => (stuck(Point((1*chunkSize + xOffset), 0)), "S")
-        case _  =>{
+        case _ =>
           jump = false
           (stuck(newPosition), prev._2)
-        }
+
       }
       val ef = e._1.map(issome => (issome,e._2)).getOrElse((prev._1,prev._2))
-      println(ef)
+      println(ef._1)
       val cv = ef._1.x
-      if ((prev._1.x == 149 && prev._1.y == 9)) {
-        println("e")
+      if ((prev._1.x == 112 && prev._1.y == 49)) {
+        ()
       }
       ef
     })
