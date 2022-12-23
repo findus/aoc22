@@ -64,25 +64,94 @@ class CubeSimulator(grid: SortedMap[Point, Char], startsX: List[Int], endsX: Lis
         case "S" => Point(prev._1.x    , prev._1.y + 1)
       }
 
-      val chunkSize = 4
-      val yChunkCount = 3
-      val xChunkCount = 4
+      /**
+       * 12
+       * 3
+       *45
+       *6
+       */
+
+      val chunkSize    = 50
+      val yChunkCount  = 4
+      val xChunkCount  = 3
       val currentChunk = Point(prev._1.x / chunkSize % xChunkCount,prev._1.y / chunkSize % yChunkCount)
-      val nextChunk    = Point(newPosition.x / chunkSize % xChunkCount,newPosition.y / chunkSize % yChunkCount)
+      val newChunk = Point(newPosition.x / chunkSize % xChunkCount,newPosition.y / chunkSize % yChunkCount)
+      val nextChunk    = (currentChunk,newChunk) match {
+        // 2 to 5
+        case (Point(2,0),Point(0,0)) if newPosition.x >= chunkSize * 3 => Point(1,2)
+        // 1 to 4
+        case (Point(1,0),Point(0,0)) => Point(0,2)
+        // 1 to 6
+        case (Point(1,0),Point(1,0)) if newPosition.y < 0 => Point(0,3)
+        // 2 to 6
+        case (Point(2,0),Point(2,0)) if newPosition.y < 0 => Point(0,3)
+        // 2 to 3
+        case (Point(2,0),Point(2,1)) => Point(1,1)
+        // 3 to 4
+        case (Point(1,1),Point(0,1)) => Point(0,2)
+        // 5 to 6
+        case (Point(1,2),Point(1,3)) => Point(0,3)
+        // 6 to 5
+        case (Point(0,3),Point(1,3)) => Point(1,2)
+        // 6 to 2
+        case (Point(0,3),Point(0,0)) if newPosition.y == 200 => Point(2,0)
+        // 6 to 1
+        case (Point(0,3),Point(0,3)) if newPosition.x < 0 => Point(1,0)
+        // 4 to 1
+        case (Point(0,2),Point(0,2)) if newPosition.x < 0 => Point(1,0)
+        // 4 to 3
+        case (Point(0,2),Point(0,1)) => Point(1,1)
+        // 5 to 2
+        case (Point(1,2),Point(2,2)) => Point(2,0)
+        // 3 to 2
+        case (Point(1,1),Point(2,1)) => Point(2,0)
+        case (a,b) => b
+      }
       val posInChunk   = Point(newPosition.x % xChunkCount, newPosition.y % yChunkCount)
       val xOffset = prev._1.y % chunkSize
       val yOffset = prev._1.x % chunkSize
+      var jump = true
       val e = (currentChunk,nextChunk) match {
-        // 4 to 6
-        case (Point(2,1),Point(3,1)) => (stuck(Point(3*chunkSize + ((chunkSize - 1) - xOffset ),2*chunkSize)), "S")
-        // 5 to 1
-        case (Point(2,2),Point(2,0)) => (stuck(Point(0*chunkSize + ((chunkSize - 1) - yOffset ),(2*chunkSize - 1))), "N")
-        // 3 to 1
-        case (Point(1,1),Point(1,0)) => (stuck(Point(2*chunkSize, 0*chunkSize + yOffset)), "E")
-        case _  =>  (stuck(newPosition), prev._2)
+        // 2 to 3
+        case (Point(2,0),Point(1,1)) => (stuck(Point(2*chunkSize - 1 , chunkSize + yOffset)), "N")
+        // 2 to 6
+        case (Point(2,0),Point(0,3)) => (stuck(Point(yOffset , 4*chunkSize - 1)), "N")
+        // 2 to 5
+        case (Point(2,0),Point(1,2)) => (stuck(Point(2*chunkSize - 1 , (chunkSize*3 - yOffset))), "W")
+        // 3 to 2
+        case (Point(1,1),Point(2,0)) => (stuck(Point(2*chunkSize + xOffset , yOffset)), "N")
+        // 5 to 2
+        case (Point(1,2),Point(2,0)) => (stuck(Point(2*chunkSize + yOffset, (chunkSize - yOffset))), "W")
+        // 4 to 3
+        case (Point(0,2),Point(1,1)) => (stuck(Point(1*chunkSize, (1*chunkSize + yOffset))), "E")
+        // 6 to 2
+        case (Point(0,3),Point(2,0)) => (stuck(Point(yOffset + xOffset, 0)), "S")
+        // 6 to 5
+        case (Point(0,3),Point(1,2)) => (stuck(Point(1*chunkSize + xOffset, (2*chunkSize) + yOffset)), "N")
+        // 5 to 6
+        case (Point(1,2),Point(0,3)) => (stuck(Point(xOffset, (3*chunkSize) + yOffset)), "W")
+        // 3 to 4
+        case (Point(1,1),Point(0,2)) => (stuck(Point(xOffset, (2*chunkSize))), "S")
+        // 4 to 1
+        case (Point(0,2),Point(1,0)) =>(stuck(Point(1*chunkSize, (1*chunkSize) - xOffset)), "E")
+        // 1 to 4
+        case (Point(1,0),Point(0,2)) => (stuck(Point(0, (2*chunkSize + xOffset))), "E")
+        // 1 to 6
+        case (Point(1,0),Point(0,3)) => (stuck(Point(0, (3*chunkSize + yOffset))), "E")
+        // 6 to 1
+        case (Point(0,3),Point(1,0)) => (stuck(Point((1*chunkSize + xOffset), 0)), "S")
+        case _  =>{
+          jump = false
+          (stuck(newPosition), prev._2)
+        }
       }
-      val d = e._1.map(issome => (issome,e._2)).getOrElse((prev._1,prev._2))
-      d
+      val ef = e._1.map(issome => (issome,e._2)).getOrElse((prev._1,prev._2))
+      println(ef)
+      val cv = ef._1.x
+      if ((prev._1.x == 149 && prev._1.y == 9)) {
+        println("e")
+      }
+      ef
     })
 
     val newFacing = newState match {
@@ -164,15 +233,15 @@ object day22 extends App {
   }
 
   io.load("day22") { lines =>
-    val (instructions: List[(Int, Char)], startsX: List[Int], endsX: List[Int], startsY: List[Int], endsY: List[Int], grid: SortedMap[Point, Char], state: State, facing: (State => Int)) = parse(lines)
-    val simulator = new Simulator(grid, startsX, endsX, startsY, endsY)
-    val finalState = instructions.foldLeft(state)((prev, action) => simulator.simulate(prev, action))
-
-    val row = finalState.position.y + 1
-    val column = finalState.position.x + 1
-
-    val result = (1000 * row + 4 * column + facing(state))
-    println(result)
+//    val (instructions: List[(Int, Char)], startsX: List[Int], endsX: List[Int], startsY: List[Int], endsY: List[Int], grid: SortedMap[Point, Char], state: State, facing: (State => Int)) = parse(lines)
+//    val simulator = new Simulator(grid, startsX, endsX, startsY, endsY)
+//    val finalState = instructions.foldLeft(state)((prev, action) => simulator.simulate(prev, action))
+//
+//    val row = finalState.position.y + 1
+//    val column = finalState.position.x + 1
+//
+//    val result = (1000 * row + 4 * column + facing(state))
+//    println(result)
   }
 
   io.load("day22") { lines =>
