@@ -108,38 +108,38 @@ class CubeSimulator(grid: SortedMap[Point, Char], startsX: List[Int], endsX: Lis
         case (a,b) => b
       }
       val posInChunk   = Point(newPosition.x % xChunkCount, newPosition.y % yChunkCount)
-      val xOffset = prev._1.y % chunkSize
-      val yOffset = prev._1.x % chunkSize
+      val xOffset = prev._1.x % chunkSize
+      val yOffset = prev._1.y % chunkSize
       var jump = true
       val e = (currentChunk,nextChunk) match {
         // 2 to 3
-        case (Point(2,0),Point(1,1)) => (stuck(Point(2*chunkSize - 1 , chunkSize + yOffset)), "N")
+        case (Point(2,0),Point(1,1)) => (stuck(Point(2*chunkSize - 1 , chunkSize + xOffset)), "W")
         // 2 to 6
-        case (Point(2,0),Point(0,3)) => (stuck(Point(yOffset , 4*chunkSize - 1)), "N")
+        case (Point(2,0),Point(0,3)) => (stuck(Point(xOffset , 4*chunkSize - 1)), "N")
         // 2 to 5
-        case (Point(2,0),Point(1,2)) => (stuck(Point(2*chunkSize - 1 , (chunkSize*3 - yOffset))), "W")
+        case (Point(2,0),Point(1,2)) => (stuck(Point(2*chunkSize - 1 , ((chunkSize*3-1) - yOffset))), "W")
         // 3 to 2
-        case (Point(1,1),Point(2,0)) => (stuck(Point(2*chunkSize + xOffset , yOffset)), "N")
+        case (Point(1,1),Point(2,0)) => (stuck(Point(2*chunkSize + yOffset , chunkSize - 1)), "N")
         // 5 to 2
-        case (Point(1,2),Point(2,0)) => (stuck(Point(2*chunkSize + yOffset, (chunkSize - yOffset))), "W")
+        case (Point(1,2),Point(2,0)) => (stuck(Point(3*chunkSize -1, ((chunkSize-1) - yOffset))), "W")
         // 4 to 3
-        case (Point(0,2),Point(1,1)) => (stuck(Point(1*chunkSize, (1*chunkSize + yOffset))), "E")
+        case (Point(0,2),Point(1,1)) => (stuck(Point(1*chunkSize, (1*chunkSize + xOffset))), "E")
         // 6 to 2
-        case (Point(0,3),Point(2,0)) => (stuck(Point(yOffset + xOffset, 0)), "S")
+        case (Point(0,3),Point(2,0)) => (stuck(Point(2*chunkSize + xOffset,0)), "S")
         // 6 to 5
-        case (Point(0,3),Point(1,2)) => (stuck(Point(1*chunkSize + xOffset, (2*chunkSize) + yOffset)), "N")
+        case (Point(0,3),Point(1,2)) => (stuck(Point(1*chunkSize + yOffset, (3*chunkSize) - 1)), "N")
         // 5 to 6
-        case (Point(1,2),Point(0,3)) => (stuck(Point(xOffset, (3*chunkSize) + yOffset)), "W")
+        case (Point(1,2),Point(0,3)) => (stuck(Point(chunkSize - 1, (3*chunkSize) + xOffset)), "W")
         // 3 to 4
-        case (Point(1,1),Point(0,2)) => (stuck(Point(xOffset, (2*chunkSize))), "S")
+        case (Point(1,1),Point(0,2)) => (stuck(Point(yOffset, (2*chunkSize))), "S")
         // 4 to 1
-        case (Point(0,2),Point(1,0)) => (stuck(Point(1*chunkSize, (1*chunkSize) - xOffset - 1)), "E")
+        case (Point(0,2),Point(1,0)) => (stuck(Point(1*chunkSize, (1*chunkSize-1) - yOffset)), "E")
         // 1 to 4
-        case (Point(1,0),Point(0,2)) => (stuck(Point(0, (2*chunkSize + (49 - xOffset)))), "E")
+        case (Point(1,0),Point(0,2)) => (stuck(Point(0, ((3*chunkSize - 1) - yOffset))), "E")
         // 1 to 6
-        case (Point(1,0),Point(0,3)) => (stuck(Point(0, (3*chunkSize + yOffset))), "E")
+        case (Point(1,0),Point(0,3)) => (stuck(Point(0, (3*chunkSize + xOffset))), "E")
         // 6 to 1
-        case (Point(0,3),Point(1,0)) => (stuck(Point((1*chunkSize + xOffset), 0)), "S")
+        case (Point(0,3),Point(1,0)) => (stuck(Point((1*chunkSize + yOffset), 0)), "S")
         case _ =>
           jump = false
           (stuck(newPosition), prev._2)
