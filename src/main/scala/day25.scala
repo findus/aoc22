@@ -35,7 +35,7 @@ object  day25 extends App {
           case 4 => '-'
         }
         val c = str.prepended(remainder)
-        calc(((rr + 2) / 5),c)
+        calc(((rr + 2) / 5),c) // +2 to avoid negative modulo
       }
       calc(decNr, "")
     }
