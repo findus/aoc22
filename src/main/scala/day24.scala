@@ -52,11 +52,11 @@ object day24 extends App {
         }
 
         val neighbours = Seq(
-          Point(cur.x, cur.y, cur.z + 1),
-          Point(cur.x - 1, cur.y, cur.z + 1),
-          Point(cur.x + 1, cur.y, cur.z + 1),
-          Point(cur.x, cur.y - 1, cur.z + 1),
-          Point(cur.x, cur.y + 1, cur.z + 1),
+          Point(cur.x    , cur.y    , cur.z + 1),
+          Point(cur.x - 1, cur.y    , cur.z + 1),
+          Point(cur.x + 1, cur.y    , cur.z + 1),
+          Point(cur.x    , cur.y - 1, cur.z + 1),
+          Point(cur.x    , cur.y + 1, cur.z + 1),
         )
 
         neighbours.filterNot(cost.contains).filterNot(points.contains).foreach { next =>
