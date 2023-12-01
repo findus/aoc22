@@ -1,5 +1,7 @@
-import scala.annotation.tailrec
+package aoc2022
+
 import scala.collection.mutable
+import io.io
 
 object  day19 extends App {
 
@@ -112,7 +114,7 @@ object  day19 extends App {
     geode
   }
 
-  io.load("day19") { lines =>
+  io.load("aoc2022/day19") { lines =>
     val parsedInput = lines.map { case regex(
     id,
     orerobotcosts,

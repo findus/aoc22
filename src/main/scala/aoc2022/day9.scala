@@ -1,4 +1,7 @@
-import day9.ActionType.ActionType
+package aoc2022
+
+import aoc2022.day9.ActionType.ActionType
+import io.io
 
 object day9 extends App {
 
@@ -72,7 +75,7 @@ object day9 extends App {
     actions
   }
 
-  io.load("day9") { lines =>
+  io.load("aoc2022/day9") { lines =>
     val actions: List[day9.Action] = parseActions(lines)
     val initialStateH = State("H", (0,0), List.empty[Coord])
     val initialStateT = State("T", (0,0), List.empty[Coord])
@@ -80,7 +83,7 @@ object day9 extends App {
     simulate(actions, start)
   }
 
-  io.load("day9") { lines =>
+  io.load("aoc2022/day9") { lines =>
     val actions: List[day9.Action] = parseActions(lines)
     val initialStateH = State("H", (0,0), List.empty[Coord])
     val rope = (1 to 9).map(nr => State(nr.toString, (0,0), List.empty[Coord])).toList.prepended(initialStateH)

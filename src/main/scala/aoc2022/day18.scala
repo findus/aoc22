@@ -1,3 +1,7 @@
+package aoc2022
+
+import io.io
+
 object day18 extends App {
 
   case class Cube(x: Int, y: Int, z: Int) {
@@ -43,7 +47,7 @@ object day18 extends App {
     //e.count(e => e == 0)
   }
 
-  io.load("day18") { lines =>
+  io.load("aoc2022/day18") { lines =>
     val cubes = lines.map(entry => {
       val coords = entry.split(",")
       Cube(Integer.parseInt(coords(0)), Integer.parseInt(coords(1)), Integer.parseInt(coords(2)))

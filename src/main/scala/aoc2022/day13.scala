@@ -1,6 +1,9 @@
+package aoc2022
+
 import scala.math.Ordered.orderingToOrdered
 import scala.math.Ordering.Implicits.seqOrdering
 import scala.util.parsing.combinator.RegexParsers
+import io.io
 
 object day13 extends App with RegexParsers {
 
@@ -25,7 +28,7 @@ object day13 extends App with RegexParsers {
 
   val regex = "(\\d+)".r
 
-  io.load("day13") { lines =>
+  io.load("aoc2022/day13") { lines =>
     val packets = lines.filterNot(_.isEmpty).map(parsePacket)
     println(packets)
     val result =
@@ -42,7 +45,7 @@ object day13 extends App with RegexParsers {
     println(result)
   }
 
-  io.load("day13") { lines =>
+  io.load("aoc2022/day13") { lines =>
     val a = ListNode(List(ListNode(List(IntNode(2)))))
     val b = ListNode(List(ListNode(List(IntNode(6)))))
     val packets = lines.filterNot(_.isEmpty).map(parsePacket).appended(a).appended(b)

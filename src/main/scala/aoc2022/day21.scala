@@ -1,3 +1,6 @@
+package aoc2022
+import io.io
+
 object day21 extends App {
 
   val regex1 = "([a-z]{4}): ([a-z]{4}) ([+-/*]) ([a-z]{4})".r
@@ -45,14 +48,14 @@ object day21 extends App {
   case class NumberMonkeh(name: String, nr: Double) extends Monkeh
   case class DependentMonkeh(name: String, x1: String, x2: String, operant: String) extends Monkeh
 
-  io.load("day21") { lines =>
+  io.load("aoc2022/day21") { lines =>
     val monkehs = parseMonkehs(lines)
     val map = monkehs.map(m => (m.name, m)).toMap
     println(printEquation(monkehs.filter(_.name.equals("root")).head, map))
     println(solve(monkehs.filter(_.name.equals("root")).head, map))
   }
 
-  io.load("day21") { lines =>
+  io.load("aoc2022/day21") { lines =>
     val monkehs = parseMonkehs(lines)
     val tuple = lines.find(_.contains("root")).map { case regex1(_, x1, _, x2) => (x1, x2) }.head
 

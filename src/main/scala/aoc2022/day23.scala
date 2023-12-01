@@ -1,6 +1,5 @@
-import day22.Point
-
-import scala.annotation.tailrec
+package aoc2022
+import io.io
 
 object  day23 extends App {
 
@@ -48,7 +47,7 @@ object  day23 extends App {
     }
   }
 
-  io.load("day23") { lines =>
+  io.load("aoc2022/day23") { lines =>
 
     globalGrid =
       lines.indices.flatMap { case y =>

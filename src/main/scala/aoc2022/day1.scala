@@ -1,8 +1,10 @@
-import scala.io.Source
+package aoc2022
+
+import io.io
 
 object day1 extends App {
 
-   io.load("day1") { lines =>
+   io.load("aoc2022/day1") { lines =>
 
      val numbers = lines.map(line => if (line.equals("")) 0 else Integer.parseInt(line))
 

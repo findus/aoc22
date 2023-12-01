@@ -1,7 +1,8 @@
-import day7.list
+package aoc2022
 
 import scala.collection.mutable
 
+import io.io
 object day7 extends App {
 
   val regex = "^(\\d+).*".r
@@ -40,13 +41,13 @@ object day7 extends App {
   stack.push(top)
   list.push(top)
 
-  io.load("day7") { lines =>
+  io.load("aoc2022/day7") { lines =>
     yeet(lines)
     val c = list.map(e => e.getSizeOfFolder()).map(_.sum)
     println(c.filter(f => f <= 100000).sum)
   }
 
-  io.load("day7") { lines =>
+  io.load("aoc2022/day7") { lines =>
     val unused_space = 70000000 - 47052440
     list.foreach(folder => {
       val size = unused_space + folder.getSizeOfFolder().sum

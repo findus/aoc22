@@ -1,4 +1,7 @@
-import day22.{Point, State}
+package aoc2022
+
+import aoc2022.day22.{Point, State}
+import io.io
 
 import scala.collection.SortedMap
 
@@ -232,7 +235,7 @@ object day22 extends App {
     (instructions, startsX, endsX, startsY, endsY, grid, state, facingval)
   }
 
-  io.load("day22") { lines =>
+  io.load("aoc2022/day22") { lines =>
     val (instructions: List[(Int, Char)], startsX: List[Int], endsX: List[Int], startsY: List[Int], endsY: List[Int], grid: SortedMap[Point, Char], state: State, facing: (State => Int)) = parse(lines)
     val simulator = new Simulator(grid, startsX, endsX, startsY, endsY)
     val finalState = instructions.foldLeft(state)((prev, action) => simulator.simulate(prev, action))
@@ -244,7 +247,7 @@ object day22 extends App {
     println(result)
   }
 
-  io.load("day22") { lines =>
+  io.load("aoc2022/day22") { lines =>
     val (instructions: List[(Int, Char)], startsX: List[Int], endsX: List[Int], startsY: List[Int], endsY: List[Int], grid: SortedMap[Point, Char], state: State, facing: (State => Int)) = parse(lines)
     val simulator = new CubeSimulator(grid, startsX, endsX, startsY, endsY)
     val finalState = instructions.foldLeft(state)((prev, action) => simulator.simulate(prev, action))

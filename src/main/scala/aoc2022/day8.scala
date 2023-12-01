@@ -1,3 +1,6 @@
+package aoc2022
+
+import io.io
 object day8 extends App{
 
   def getColumnHeightsForRange(range: Range, tree: MapEntry, row: Int)(implicit entries: TreeMap) = range.filter(colIdx => (row, colIdx) != tree._1).map(colIdx => entries(colIdx, row))
@@ -14,7 +17,7 @@ object day8 extends App{
     cb(entries, innerTrees, max)
   }
 
-  io.load("day8") { lines =>
+  io.load("aoc2022/day8") { lines =>
     doStuffWithTrees(lines) { (entries, innerTrees, max) =>
       val visibleTrees = innerTrees.foldLeft(0)((prev, tree) => {
         val column = tree._1._1
@@ -34,7 +37,7 @@ object day8 extends App{
     range.zipWithIndex.find(c => forHeight(c._1) >= treeHeight).map(_._2 + 1).getOrElse(range.size)
   }
 
-  io.load("day8") { lines =>
+  io.load("aoc2022/day8") { lines =>
     doStuffWithTrees(lines) { (trees, innerTrees, max) =>
       val viewScores = innerTrees.map(tree => {
         val column = tree._1._1

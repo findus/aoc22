@@ -1,6 +1,7 @@
-import day9.ActionType.Value
+package aoc2022
 
 import scala.util.control.Breaks.breakable
+import io.io
 
 object day14 extends App {
 
@@ -13,7 +14,7 @@ object day14 extends App {
 
   case class Coordinate(x: Int, y: Int)
 
-  io.load("day14") { lines =>
+  io.load("aoc2022/day14") { lines =>
     val rockStructures = lines.map(line => line.split(" -> ").map(str => (Integer.parseInt(str.split(",").head), Integer.parseInt(str.split(",").last))).sliding(2,1).toList).toList
     val rockCoordinates = rockStructures.map(structure => structure.foldLeft(List.empty[List[Coordinate]])((prev, structurePart) => {
       val vertically = liesVertically(structurePart)
@@ -80,7 +81,7 @@ object day14 extends App {
 
   }
 
-  io.load("day14") { lines =>
+  io.load("aoc2022/day14") { lines =>
 
   }
 }

@@ -1,5 +1,8 @@
+package aoc2022
+
 object day5 extends App {
 
+  import io.io
   case class CrateStack(no: Integer, stack: List[String])
   case class Command(from: Int, to: Int, amount: Int)
 
@@ -36,11 +39,11 @@ object day5 extends App {
     outcome
   }
 
-  io.load("day5") { lines =>
+  io.load("aoc2022/day5") { lines =>
     println(run(lines, false).map(_.stack.head).mkString(""))
   }
 
-  io.load("day5") { lines =>
+  io.load("aoc2022/day5") { lines =>
     println(run(lines, true).map(_.stack.head).mkString(""))
   }
 

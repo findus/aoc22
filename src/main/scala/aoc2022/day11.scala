@@ -1,4 +1,7 @@
+package aoc2022
+
 import scala.language.postfixOps
+import io.io
 
 object day11 extends App {
 
@@ -53,13 +56,13 @@ object day11 extends App {
     }
   }
 
-  io.load("day11") { lines =>
+  io.load("aoc2022/day11") { lines =>
     val monkeyInput = lines.sliding(7,7).toList
     val monkeys = generateStartingItems(monkeyInput)
     println(simulate(monkeys, 1 to 20, p1c).map(_.itemsInspected).sorted.reverse.slice(0,2).product)
   }
 
-  io.load("day11") { lines =>
+  io.load("aoc2022/day11") { lines =>
     val monkeyInput = lines.sliding(7,7).toList
     val monkeys = generateStartingItems(monkeyInput)
 

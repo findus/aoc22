@@ -1,4 +1,7 @@
+package aoc2022
+
 import scala.annotation.tailrec
+import io.io
 
 object day17 extends App {
 
@@ -86,7 +89,7 @@ object day17 extends App {
     }
   }
 
-  io.load("day17") { lines =>
+  io.load("aoc2022/day17") { lines =>
     val mc = Rock("minus",asCoord(minusShape))
     val pc = Rock("plus",asCoord(plusShape))
     val lc = Rock("L",asCoord(lShape))

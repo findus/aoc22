@@ -1,9 +1,7 @@
-import day12.{entries, triggered}
-import day7.Folder
+package aoc2022
 
-import javax.xml.stream.events.StartElement
 import scala.annotation.tailrec
-import scala.collection.mutable
+import io.io
 
 object day16 extends App {
 
@@ -54,7 +52,7 @@ object day16 extends App {
 
   case class Turn(position: String, openValves: List[String], releasedPressure: Int, minutesPassed: Int, summedPressureRelease: Int)
 
-  io.load("day16") { lines =>
+  io.load("aoc2022/day16") { lines =>
     val regex = "Valve ([A-Z]+) has flow rate=(\\d+); tunnels? leads? to valves? (.*)".r
 
     val valves = lines.map {

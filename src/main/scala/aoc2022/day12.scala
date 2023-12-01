@@ -1,4 +1,7 @@
+package aoc2022
+
 import scala.annotation.tailrec
+import io.io
 
 object day12 extends App {
 
@@ -67,7 +70,7 @@ object day12 extends App {
 
   private def getAlphabetIndex(column: (Char, Int)) = if (column._1 == 'S') -1 else if (column._1 == 'E') 26 else column._1.toInt - 97
 
-  io.load("day12") { lines =>
+  io.load("aoc2022/day12") { lines =>
     entries = lines.zipWithIndex.flatMap(row => row._1.zipWithIndex.map(column => ((column._2, row._2), getAlphabetIndex(column)))).sorted.toMap
     val e1 = getGraph(entries, (entry, coord) => (entry._2.get - entries(coord._1)) == 1 || (entry._2.get - entries(coord._1)) <= 0)
     val e2 = getGraph(entries, (entry, coord) => (entry._2.get - entries(coord._1)) == 1 || (entry._2.get - entries(coord._1)) >= -1)

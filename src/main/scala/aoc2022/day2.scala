@@ -1,3 +1,6 @@
+package aoc2022
+
+import io.io
 
 case class Round(enemyTurn: String, yourTurn: Response)
 case class Response(whatType: String, count: Int)
@@ -18,7 +21,7 @@ object day2 extends App {
     if (result == 2) { 6 } else if (result == 0) { 3 } else { 0 }
   }
 
-  io.load("day2") { lines =>
+  io.load("aoc2022/day2") { lines =>
      val rounds = lines.foldLeft(0)((prev, line) => {
        val split = line.split(" ")
        prev + winner(getNumber(split.head), getNumber(split.last)) +  getNumber(split.last)
@@ -27,7 +30,7 @@ object day2 extends App {
     println(rounds)
   }
 
-  io.load("day2") { lines =>
+  io.load("aoc2022/day2") { lines =>
 
     val rounds = lines.foldLeft(0)((prev, line) => {
       val (a,b) = (line.split(" ").head, line.split(" ").last)

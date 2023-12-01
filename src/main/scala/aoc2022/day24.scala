@@ -1,7 +1,7 @@
-import day22.Point
+package aoc2022
 
-import scala.annotation.tailrec
 import scala.collection.SortedMap
+import io.io
 
 object day24 extends App {
 
@@ -23,7 +23,7 @@ object day24 extends App {
     override def compare(a: Point, b: Point): Int = if (a.y == b.y) a.x - b.x else b.y - a.y
   }
 
-  io.load("day24") { lines =>
+  io.load("aoc2022/day24") { lines =>
     val coords = SortedMap.from(lines.zipWithIndex.flatMap( { case(line,y) =>
       line.zipWithIndex.map { case (character,x) =>
         (Point(x,y,0),character)

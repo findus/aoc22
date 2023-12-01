@@ -1,3 +1,7 @@
+package aoc2022
+
+import io.io
+
 object day10 extends App {
 
   case class Instruction(name: String, data: Option[Int], cycles: Int)
@@ -44,7 +48,7 @@ object day10 extends App {
     }
   }
 
-  io.load("day10") { lines =>
+  io.load("aoc2022/day10") { lines =>
     val cpu = CPU(0, 0, lines.map(genInstruction), List(("X", 1)).toMap, 0)
     val cpuState = (1 to 240).foldLeft(cpu)((prev, cycle) => {
       draw(cycle, prev.registers("X"))

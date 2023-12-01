@@ -1,8 +1,11 @@
+package aoc2022
+
 import scala.annotation.tailrec
+import io.io
 
 object  day25 extends App {
 
-  io.load("day25") { lines =>
+  io.load("aoc2022/day25") { lines =>
 
     def snafuToDec(nr: String):Long = {
       val len = nr.length - 1

@@ -1,4 +1,6 @@
-import scala.util.control.Breaks.break
+package aoc2022
+
+import io.io
 
 object day15 extends App {
 
@@ -39,7 +41,7 @@ object day15 extends App {
   }
 
 
-  io.load("day15") { lines =>
+  io.load("aoc2022/day15") { lines =>
     val parsed = lines.map {
       case regex(sx,sy,bx,by) => (Coord(Integer.parseInt(sx),Integer.parseInt(sy)),Coord(Integer.parseInt(bx),Integer.parseInt(by)))
       case _ => throw new Exception("Parsing failed")

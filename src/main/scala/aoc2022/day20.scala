@@ -1,4 +1,7 @@
+package aoc2022
+
 import scala.annotation.tailrec
+import io.io
 
 object  day20 extends App {
 
@@ -29,7 +32,7 @@ object  day20 extends App {
     }
   }
 
-  io.load("day20") { lines =>
+  io.load("aoc2022/day20") { lines =>
     val numbers = State(lines.map(Integer.parseInt).map(_.toLong).zipWithIndex,0)
     val iterator = Iterator.iterate(numbers)(iterate)
     val next = iterator.drop(1).next()
@@ -37,7 +40,7 @@ object  day20 extends App {
     println(sum)
   }
 
-  io.load("day20") { lines =>
+  io.load("aoc2022/day20") { lines =>
     val numbers = State(lines.map(Integer.parseInt).map(e => e.toLong * 811589153L).zipWithIndex,0)
     val iterator = Iterator.iterate(numbers)(iterate)
     val next = iterator.drop(10).next()
